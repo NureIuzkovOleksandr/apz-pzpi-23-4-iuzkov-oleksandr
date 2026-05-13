@@ -1,0 +1,536 @@
+﻿Харківський національний університет радіоелектроніки
+Факультет комп’ютерних наук
+Кафедра програмної інженерії
+ЗВІТ
+до практичного заняття № 1
+з дисципліни «Архітектура програмного забезпечення»
+на тему: «Шаблон (патерн) проєктування ПЗ: Стратегія (Strategy)»
+    
+
+
+Виконав:                                                                           Перевірив:
+ст. гр. ПЗПІ-23-4                                                              ст. викладач кафедри ПІ
+Юзков Олександр                                            	         Сокорчук Ігор Петрович
+
+
+
+Харків 2026
+
+1 ІСТОРІЯ ЗМІН
+№ДатаВерсіяОпис змін та виправлень111.05.20260.1Створено розділ «Завдання»211.05.20260.2Створено розділ «Опис виконаної роботи»311.05.20260.3Додано додатки А, Б, В. Фінальна версія.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2 ЗАВДАННЯ
+     Метою практичного заняття є ознайомитися з одним із шаблонів (патернів) проєктування програмного забезпечення, проаналізувати його структуру, призначення та практичне застосування.
+     Відповідно до завдання необхідно:
+– Підготувати доповідь на тему: «Шаблон (патерн) проєктування ПЗ: Стратегія (Strategy)».
+– Обрати шаблон (патерн) із книги GoF (крім Singleton).
+– Розробити слайди презентації доповіді.
+– Записати відеозапис доповіді тривалістю 10–12 хвилин.
+– Опублікувати відео на YouTube з облікового запису @nure.ua.
+– Створити та налаштувати GitHub-репозиторій студента.
+– Створити структуру директорій репозиторію відповідно до вимог дисципліни.
+– Додати файл README.md встановленої структури.
+– Завантажити програмний код прикладів шаблона (патерна).
+– Експортувати звіт у PDF та plain text TXT з кодуванням UTF-8.
+– Завантажити звіт у форматі PDF на платформу dl.nure.ua.
+– Завантажити звіт у форматі TXT у репозиторій GitHub.
+
+
+
+
+
+
+
+
+
+
+3 ОПИС ВИКОНАНОЇ РОБОТИ
+     3.1 Загальні відомості про шаблони (патерни) проєктування
+     Шаблони проєктування — це типові рішення часто повторюваних проблем у проєктуванні програмного забезпечення. Вони є не готовим кодом, а концептуальним описом підходу до вирішення задачі, який можна адаптувати до конкретної ситуації.
+     Каталог GoF (Gang of Four) — книга «Design Patterns: Elements of Reusable Object-Oriented Software» авторів Гамми, Гелма, Джонсона та Вліссідеса — класифікує 23 шаблони за трьома категоріями:
+– Породжувальні (Creational) — відповідають за механізм створення об’єктів.
+– Структурні (Structural) — визначають способи організації класів і об’єктів.
+– Поведінкові (Behavioral) — описують взаємодію та розподіл обов’язків між об’єктами.
+     Шаблони підвищують повторне використання коду, спрощують його супровід та забезпечують єдину мову спілкування між розробниками.
+
+     3.2 Опис обраного патерна
+     Назва патерна: Стратегія (Strategy).
+     Тип шаблона: поведінковий (Behavioral).
+     Основне призначення: патерн «Стратегія» визначає сімейство алгоритмів, інкапсулює кожен із них та забезпечує їхню взаємозамінність. Він дозволяє змінювати алгоритм незалежно від клієнтів, які ним користуються.
+     Передумови застосування:
+– є потреба в різних варіантах одного алгоритму;
+– необхідно уникнути розростання умовних операторів (if/else, switch);
+– різні варіанти поведінки повинні бути легко замінними під час виконання програми;
+– алгоритми потрібно ізолювати від коду, який їх використовує.
+     Переваги:
+– забезпечує принцип відкритості/закритості: нові стратегії додаються без зміни контексту;
+– замінює умовну логіку поліморфізмом;
+– сприяє повторному використанню алгоритмів у різних контекстах;
+– спрощує тестування: кожну стратегію можна перевіряти окремо.
+     Недоліки:
+– збільшує кількість класів у системі;
+– клієнт має знати про різні стратегії та обирати між ними;
+– може бути надлишковим, якщо кількість алгоритмів невелика.
+
+     3.3 Структура шаблона (патерна)
+     Патерн «Стратегія» складається з трьох структурних компонентів.
+* Strategy (абстрактна стратегія) — інтерфейс або абстрактний клас, що оголошує спільний метод для всіх конкретних стратегій (train, predict, name).
+* ConcreteStrategy (конкретна стратегія) — реалізує алгоритм, оголошений у інтерфейсі Strategy. У прикладі: LinearRegressionStrategy, KNNStrategy, DecisionStumpStrategy.
+* Context (контекст) — зберігає посилання на об’єкт стратегії та делегує йому виконання алгоритму. У прикладі — клас MLPipeline.
+     Клієнт створює об’єкт Context та передає йому обраний об’єкт ConcreteStrategy. Context делегує виклик методу стратегії. Клієнт може замінити стратегію під час виконання програми, викликавши метод set_strategy() контексту.
+
+     3.4 Реалізація шаблона (патерна)
+     Реалізацію виконано мовою програмування Python із застосуванням стандартного модуля abc для визначення абстрактного базового класу. Основні етапи реалізації:
+* Створення абстрактної стратегії. Клас ModelStrategy визначає абстрактні методи train(), predict() та name(), які кожна конкретна стратегія зобов’язана реалізувати.
+Приклад з коду:
+1.         class ModelStrategy(ABC):
+2.     """Абстрактний клас стратегії навчання моделі."""
+3. 
+4.     @abstractmethod
+5.     def train(self, X: list, y: list) -> dict:
+6.         """Навчає модель на вхідних даних."""
+7.         pass
+8. 
+9.     @abstractmethod
+10.     def predict(self, model: dict, X: list) -> list:
+11.         """Повертає передбачення для вхідних даних."""
+12.         pass
+13. 
+14.     @abstractmethod
+15.     def name(self) -> str:
+16.         """Повертає назву алгоритму."""
+17.         Pass
+
+* Реалізація конкретних стратегій: LinearRegressionStrategy реалізує лінійну регресію методом найменших квадратів; KNNStrategy — метод k найближчих сусідів; DecisionStumpStrategy — одноступеневе дерево рішень.
+
+
+Приклад з коду:
+1. class LinearRegressionStrategy(ModelStrategy):
+2.     """Стратегія: лінійна регресія (метод найменших квадратів)."""
+3. 
+4.     def train(self, X: list, y: list) -> dict:
+5.         n = len(X)
+6.         sum_x = sum(X)
+7.         sum_y = sum(y)
+8.         sum_xy = sum(X[i] * y[i] for i in range(n))
+9.         sum_xx = sum(X[i] ** 2 for i in range(n))
+10. 
+11.         slope = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x ** 2)
+12.         intercept = (sum_y - slope * sum_x) / n
+13. 
+14.         return {"slope": slope, "intercept": intercept}
+15. 
+16.     def predict(self, model: dict, X: list) -> list:
+17.         return [model["slope"] * x + model["intercept"] for x in X]
+18. 
+19.     def name(self) -> str:
+20.         return "Лінійна регресія"
+21. 
+22. class KNNStrategy(ModelStrategy):
+23.     """Стратегія: метод k найближчих сусідів (k-NN)."""
+24. 
+25.     def __init__(self, k: int = 3):
+26.         self.k = k
+27. 
+28.     def train(self, X: list, y: list) -> dict:
+29.         # k-NN зберігає навчальні дані як модель
+30.         return {"X_train": X, "y_train": y}
+31. 
+32.     def predict(self, model: dict, X: list) -> list:
+33.         predictions = []
+34.         for x in X:
+35.             distances = [
+36.                 (abs(x - x_train), y_train)
+37.                 for x_train, y_train in zip(model["X_train"], model["y_train"])
+38.             ]
+39.             distances.sort(key=lambda d: d[0])
+40.             k_nearest = [d[1] for d in distances[: self.k]]
+41.             predictions.append(sum(k_nearest) / len(k_nearest))
+42.         return predictions
+43. 
+44.     def name(self) -> str:
+45.         return f"k-NN (k={self.k})"
+46. 
+47. class DecisionStumpStrategy(ModelStrategy):
+48.     """Стратегія: одноступеневе дерево рішень (Decision Stump)."""
+49. 
+50.     def train(self, X: list, y: list) -> dict:
+51.         best_threshold = None
+52.         best_error = float("inf")
+53. 
+54.         for threshold in X:
+55.             predictions = [
+56.                 sum(yi for xi, yi in zip(X, y) if xi <= threshold)
+57.                 / max(1, sum(1 for xi in X if xi <= threshold))
+58.                 if sum(1 for xi in X if xi <= threshold) > 0
+59.                 else 0
+60.                 for _ in [threshold]
+61.             ]
+62.             left_mean = (
+63.                 sum(yi for xi, yi in zip(X, y) if xi <= threshold)
+64.                 / max(1, sum(1 for xi in X if xi <= threshold))
+65.             )
+66.             right_mean = (
+67.                 sum(yi for xi, yi in zip(X, y) if xi > threshold)
+68.                 / max(1, sum(1 for xi in X if xi > threshold))
+69.             )
+70.             error = sum(
+71.                 (yi - (left_mean if xi <= threshold else right_mean)) ** 2
+72.                 for xi, yi in zip(X, y)
+73.             )
+74.             if error < best_error:
+75.                 best_error = error
+76.                 best_threshold = threshold
+77.                 best_left = left_mean
+78.                 best_right = right_mean
+79. 
+80.         return {
+81.             "threshold": best_threshold,
+82.             "left_value": best_left,
+83.             "right_value": best_right,
+84.         }
+85. 
+86.     def predict(self, model: dict, X: list) -> list:
+87.         return [
+88.             model["left_value"] if x <= model["threshold"] else model["right_value"]
+89.             for x in X
+90.         ]
+91. 
+92.     def name(self) -> str:
+93.         return "Дерево рішень (Stump)"
+
+* Реалізація контексту. Клас MLPipeline зберігає поточну стратегію та делегує їй навчання і передбачення. Метод set_strategy() дозволяє замінювати алгоритм під час виконання без зміни решти коду конвеєра.
+Приклад з коду:
+1. class MLPipeline:
+2.     """
+3.     Контекст, який використовує стратегію навчання.
+4.     Дозволяє замінювати алгоритм без зміни коду конвеєра.
+5.     """
+6. 
+7.     def __init__(self, strategy: ModelStrategy):
+8.         self._strategy = strategy
+9.         self._model = None
+10. 
+11.     def set_strategy(self, strategy: ModelStrategy) -> None:
+12.         """Замінює поточну стратегію навчання."""
+13.         self._strategy = strategy
+14.         self._model = None
+15.         print(f"  Стратегію змінено на: {strategy.name()}")
+16. 
+17.     def fit(self, X: list, y: list) -> None:
+18.         """Навчає модель із поточною стратегією."""
+19.         print(f"  Навчання за алгоритмом: {self._strategy.name()}")
+20.         self._model = self._strategy.train(X, y)
+21. 
+22.     def predict(self, X: list) -> list:
+23.         """Повертає передбачення."""
+24.         if self._model is None:
+25.             raise RuntimeError("Модель ще не навчена. Спочатку викличте fit().")
+26.         return self._strategy.predict(self._model, X)
+27. 
+28.     def evaluate(self, X: list, y_true: list) -> float:
+29.         """Обчислює середньоквадратичну похибку (RMSE)."""
+30.         y_pred = self.predict(X)
+31.         mse = sum((yt - yp) ** 2 for yt, yp in zip(y_true, y_pred)) / len(y_true)
+32.         return math.sqrt(mse)
+
+* Демонстрація. Функція main() послідовно замінює три стратегії на одному конвеєрі MLPipeline та виводить передбачення і значення RMSE для кожного алгоритму.
+Приклад з коду:
+1. def main():
+2.     # Навчальні дані: залежність між кількістю годин навчання та оцінкою
+3.     X_train = [1, 2, 3, 4, 5, 6, 7, 8]
+4.     y_train = [50, 55, 60, 65, 70, 75, 80, 85]
+5.     X_test = [3, 6, 9]
+6.     y_test = [60, 75, 90]
+7. 
+8.     print("=" * 55)
+9.     print("Демонстрація патерну «Стратегія» у задачі регресії")
+10.     print("=" * 55)
+11. 
+12.     # Створення конвеєра з початковою стратегією
+13.     pipeline = MLPipeline(LinearRegressionStrategy())
+14. 
+15.     strategies = [
+16.         LinearRegressionStrategy(),
+17.         KNNStrategy(k=2),
+18.         DecisionStumpStrategy(),
+19.     ]
+20. 
+21.     for strategy in strategies:
+22.         print(f"\n--- {strategy.name()} ---")
+23.         pipeline.set_strategy(strategy)
+24.         pipeline.fit(X_train, y_train)
+25.         predictions = pipeline.predict(X_test)
+26.         rmse = pipeline.evaluate(X_test, y_test)
+27.         print(f"  Передбачення для {X_test}: {[round(p, 2) for p in predictions]}")
+28.         print(f"  RMSE: {rmse:.4f}")
+29. 
+30.     print("\n" + "=" * 55)
+31.     print("Висновок: стратегію змінено тричі без зміни коду конвеєра.")
+32.     print("=" * 55)
+33. 
+
+
+
+
+
+
+
+
+4 ВИСНОВКИ
+     У результаті виконання практичного заняття було:
+– досліджено патерн проєктування «Стратегія» (Strategy) з каталогу GoF;
+– проаналізовано його архітектурні особливості, структуру та принципи взаємодії компонентів;
+– реалізовано приклади програмного коду мовою Python у контексті задач науки про дані;
+– продемонстровано взаємозамінність трьох алгоритмів без зміни коду конвеєра;
+– сформовано навички практичного застосування поведінкових патернів проєктування;
+– створено GitHub-репозиторій зі стандартизованою структурою директорій;
+– підготовлено презентацію та відеодоповідь.
+
+     Практичне застосування патерну «Стратегія» у задачах науки про дані дозволяє будувати гнучкі конвеєри машинного навчання, в яких алгоритм може змінюватися незалежно від решти системи. Це підвищує повторне використання коду, масштабованість та підтримуваність програмних систем.
+
+
+
+ДОДАТОК А
+Відеозапис
+     Відеозапис презентації результатів практичного заняття: https://youtu.be/6s09saZb8GA
+     Хронологічний опис відеозапису:
+00:00 — Вступ. Представлення теми доповіді, групи та студента.
+00:11 — Класифікація патернів GoF. Три категорії: породжувальні, структурні, поведінкові.
+00:40 — Визначення патерна «Стратегія» та його місце серед поведінкових патернів.
+01:24 — Проблема, яку вирішує патерн: розростання умовної логіки.
+02:20 — UML-діаграма: опис структури (ModelStrategy, ConcreteStrategy, MLPipeline).
+03:20 — Переваги та недоліки патерна «Стратегія».
+04:15 — Реальні випадки застосування у задачах науки про дані.
+05:14 — Реалізація абстрактної стратегії ModelStrategy мовою Python.
+06:19 — Реалізація LinearRegressionStrategy та KNNStrategy.
+07:02 — Реалізація DecisionStumpStrategy та контексту MLPipeline.
+08:06 — Демонстрація виконання: зміна стратегій і порівняння RMSE.
+09:17 — Висновки та підсумок доповіді.
+
+
+
+ДОДАТОК Б
+Слайди презентації
+
+
+Рисунок Б.1 — Титульний слайд
+
+
+Рисунок Б.2 — Мета та завдання доповіді
+
+
+
+Рисунок Б.3 — Класифікація патернів GoF
+
+
+
+Рисунок Б.4 — Призначення патерна «Стратегія»
+
+
+
+
+Рисунок Б.5 — Передумови застосування
+
+
+Рисунок Б.6 — UML-діаграма структури патерна
+
+
+
+
+
+Рисунок Б.7 — Переваги та недоліки
+
+
+
+Рисунок Б.8 — Абстрактна стратегія (код)
+
+
+
+
+
+Рисунок Б.9 — Конкретні стратегії (код)
+
+
+
+Рисунок Б.10 — Контекст MLPipeline та результати виконання програми(код)
+
+
+
+
+Рисунок Б.12 — Висновки
+
+
+
+ДОДАТОК В
+Приклади програмного коду
+
+     Файл: https://github.com/NureIuzkovOleksandr/apz-pzpi-23-4-iuzkov-oleksandr/blob/main/Pract1/pzpi-23-4-iuzkov-oleksandr-pract1/code-examples-pract1.py
+
+1. """
+2. Патерн проєктування «Стратегія» (Strategy)
+3. Приклад реалізації для задач науки про дані (Data Science)
+4. Студент: Юзков Олександр, ПЗПІ-23-4
+5. """
+6.  
+7. from abc import ABC, abstractmethod
+8. import math
+9.  
+10.  
+11. # 1. Абстрактна стратегія
+12.  
+13. class ModelStrategy(ABC):
+14.     """Абстрактний клас стратегії навчання моделі."""
+15.  
+16.     @abstractmethod
+17.     def train(self, X: list, y: list) -> dict:
+18.         pass
+19.  
+20.     @abstractmethod
+21.     def predict(self, model: dict, X: list) -> list:
+22.         pass
+23.  
+24.     @abstractmethod
+25.     def name(self) -> str:
+26.         pass
+27.  
+28.  
+29. # 2. Конкретні стратегії
+30.  
+31. class LinearRegressionStrategy(ModelStrategy):
+32.     """Лінійна регресія (метод найменших квадратів)."""
+33.  
+34.     def train(self, X: list, y: list) -> dict:
+35.         n = len(X)
+36.         sum_x, sum_y = sum(X), sum(y)
+37.         sum_xy = sum(X[i] * y[i] for i in range(n))
+38.         sum_xx = sum(X[i] ** 2 for i in range(n))
+39.         slope = (n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x ** 2)
+40.         intercept = (sum_y - slope * sum_x) / n
+41.         return {"slope": slope, "intercept": intercept}
+42.  
+43.     def predict(self, model: dict, X: list) -> list:
+44.         return [model["slope"] * x + model["intercept"] for x in X]
+45.  
+46.     def name(self) -> str:
+47.         return "Лінійна регресія"
+48.  
+49.  
+50. class KNNStrategy(ModelStrategy):
+51.     """Метод k найближчих сусідів (k-NN)."""
+52.  
+53.     def __init__(self, k: int = 3):
+54.         self.k = k
+55.  
+56.     def train(self, X: list, y: list) -> dict:
+57.         return {"X_train": X, "y_train": y}
+58.  
+59.     def predict(self, model: dict, X: list) -> list:
+60.         predictions = []
+61.         for x in X:
+62.             dist = sorted(
+63.                 zip([abs(x - xt) for xt in model["X_train"]], model["y_train"])
+64.             )
+65.             k_near = [d[1] for d in dist[:self.k]]
+66.             predictions.append(sum(k_near) / len(k_near))
+67.         return predictions
+68.  
+69.     def name(self) -> str:
+70.         return f"k-NN (k={self.k})"
+71.  
+72.  
+73. class DecisionStumpStrategy(ModelStrategy):
+74.     """Одноступеневе дерево рішень (Decision Stump)."""
+75.  
+76.     def train(self, X: list, y: list) -> dict:
+77.         best_thr, best_err = None, float("inf")
+78.         best_l = best_r = 0
+79.         for thr in X:
+80.             lm = sum(yi for xi, yi in zip(X, y) if xi <= thr) \
+81.                  / max(1, sum(1 for xi in X if xi <= thr))
+82.             rm = sum(yi for xi, yi in zip(X, y) if xi > thr) \
+83.                  / max(1, sum(1 for xi in X if xi > thr))
+84.             err = sum((yi-(lm if xi<=thr else rm))**2 for xi,yi in zip(X,y))
+85.             if err < best_err:
+86.                 best_err, best_thr, best_l, best_r = err, thr, lm, rm
+87.         return {"threshold": best_thr, "left": best_l, "right": best_r}
+88.  
+89.     def predict(self, model: dict, X: list) -> list:
+90.         return [model["left"] if x <= model["threshold"]
+91.                 else model["right"] for x in X]
+92.  
+93.     def name(self) -> str:
+94.         return "Дерево рішень (Stump)"
+95.  
+96.  
+97. # 3. Контекст — конвеєр машинного навчання
+98.  
+99. class MLPipeline:
+100.     def __init__(self, strategy: ModelStrategy):
+101.         self._strategy = strategy
+102.         self._model = None
+103.  
+104.     def set_strategy(self, strategy: ModelStrategy) -> None:
+105.         self._strategy = strategy
+106.         self._model = None
+107.         print(f"  Стратегію змінено: {strategy.name()}")
+108.  
+109.     def fit(self, X: list, y: list) -> None:
+110.         self._model = self._strategy.train(X, y)
+111.  
+112.     def predict(self, X: list) -> list:
+113.         if self._model is None:
+114.             raise RuntimeError("Модель не навчена.")
+115.         return self._strategy.predict(self._model, X)
+116.  
+117.     def evaluate(self, X: list, y_true: list) -> float:
+118.         y_pred = self.predict(X)
+119.         mse = sum((yt-yp)**2 for yt,yp in zip(y_true, y_pred)) / len(y_true)
+120.         return math.sqrt(mse)
+121.  
+122.  
+123. # 4. Демонстрація використання
+124.  
+125. def main():
+126.     X_train = [1, 2, 3, 4, 5, 6, 7, 8]
+127.     y_train = [50, 55, 60, 65, 70, 75, 80, 85]
+128.     X_test  = [3, 6, 9]
+129.     y_test  = [60, 75, 90]
+130.  
+131.     pipeline = MLPipeline(LinearRegressionStrategy())
+132.     for strat in [LinearRegressionStrategy(), KNNStrategy(k=2),
+133.                   DecisionStumpStrategy()]:
+134.         pipeline.set_strategy(strat)
+135.         pipeline.fit(X_train, y_train)
+136.         preds = pipeline.predict(X_test)
+137.         rmse  = pipeline.evaluate(X_test, y_test)
+138.         print(f"  {strat.name()}: {[round(p,2) for p in preds]}, RMSE={rmse:.4f}")
+139.  
+140.  
+141. if __name__ == "__main__":
+142.     main()
+
+1
+
+2
+
